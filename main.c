@@ -3,8 +3,10 @@
 #include <stdlib.h>
 #include <string.h>
 
+#define TODO_LENGTH 18
+
 struct Todo{
-    char text[20];
+    char text[TODO_LENGTH];
     bool completed;
 };
 
@@ -28,7 +30,7 @@ void add_todo(struct TodoList *list,char *text){
 
 void print_todos(struct TodoList *list){
     for(int i=0; i<list->size; i++){
-        printf("  %s\t#%i %s\n",list->todos[i].completed==true?"✅":"❌",i+1,list->todos[i].text);
+        printf("  \t#%i  %-17s%s\n",i+1,list->todos[i].text,list->todos[i].completed==true?"✅":"❌");
     }
 }
 
@@ -46,11 +48,37 @@ void print_prompt(struct TodoList *list){
     if(list->size>0){
         printf("2. Mark Done\n");
         printf("3. Remove Todo\n");
+        printf("\n4. Exit.\n");
     }
+}
+
+void dispatch_choice(struct TodoList* list){
+    int number;
+    scanf("%d", &number);
+    getchar(); // Consume the newline character left in the input buffer
+
+    switch (number)
+    {
+    case 1:
+        printf("Enter Todo:");
+        char newTodo[TODO_LENGTH];
+        fgets(newTodo, sizeof(newTodo), stdin);
+        // Remove newline character if present
+        newTodo[strcspn(newTodo, "\n")] = '\0';
+        add_todo(list,newTodo);
+        break;
+    
+    default:
+        break;
+    }
+
 }
 
 int main() {
     struct TodoList *list = (initialize_todolist());
     add_todo(list,"Hello, World!");
-    print_prompt(list);    
+    while(true){
+        print_prompt(list);    
+        dispatch_choice(list);
+    }
 }
